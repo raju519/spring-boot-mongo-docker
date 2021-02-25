@@ -11,7 +11,7 @@ data:
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
 metadata:
-  name: fast-storage
+  name: fast
 provisioner: csi-driver.example.com
 parameters:
   type: pd-ssd
@@ -28,7 +28,7 @@ spec:
   resources:
     requests:
       storage: 5Gi
-  storageClassName: fast-storage
+  storageClassName: fast
 ---
 # Replication Controller for springapp
 apiVersion: v1
