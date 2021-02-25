@@ -18,7 +18,7 @@ spec:
   - ReadWriteOnce
   resources:
     requests:
-      storage: 5Gi
+      storage: 2Gi
   storageClassName: fast-storage
 
 ---
@@ -28,7 +28,7 @@ metadata:
   name: my-manually-created-pv
 spec:
   capacity:
-    storage: 5Gi
+    storage: 2Gi
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
