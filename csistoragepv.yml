@@ -1,0 +1,64 @@
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: fast-storage
+provisioner: csi-driver.example.com
+parameters:
+  type: pd-ssd
+  csi.storage.k8s.io/provisioner-secret-name: mysecret
+  csi.storage.k8s.io/provisioner-secret-namespace: mynamespace
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: my-request-for-storage
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: fast-storage
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: my-manually-created-pv
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  csi:
+    driver: csi-driver.example.com
+    volumeHandle: existingVolumeName
+    readOnly: false
+    fsType: ext4
+    volumeAttributes:
+      foo: bar
+    controllerPublishSecretRef:
+      name: mysecret1
+      namespace: mynamespace
+    nodeStageSecretRef:
+      name: mysecret2
+      namespace: mynamespace
+    nodePublishSecretRef
+      name: mysecret3
+      namespace: mynamespace
+---
+kind: Pod
+apiVersion: v1
+metadata:
+  name: my-pod
+spec:
+  containers:
+    - name: my-frontend
+      image: nginx
+      volumeMounts:
+      - mountPath: "/var/www/html"
+        name: my-csi-volume
+  volumes:
+    - name: my-csi-volume
+      persistentVolumeClaim:
+        claimName: my-request-for-storage
