@@ -1,45 +1,62 @@
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
 metadata:
-  name: csi-hostpath-sc
-provisioner: hostpath.csi.k8s.io
-volumeBindingMode: WaitForFirstConsumer
+  name: fast-storage
+provisioner: csi-driver.example.com
+parameters:
+  type: pd-ssd
+  csi.storage.k8s.io/provisioner-secret-name: mysecret
+  csi.storage.k8s.io/provisioner-secret-namespace: mynamespace
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: pvc-fs
+  name: my-request-for-storage
 spec:
   accessModes:
   - ReadWriteOnce
   resources:
     requests:
-      storage: 1Gi
-  storageClassName: csi-hostpath-sc
+      storage: 5Gi
+  storageClassName: fast-storage
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: my-manually-created-pv
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  csi:
+    driver: csi-driver.example.com
+    volumeHandle: existingVolumeName
+    readOnly: false
+    fsType: ext4
+    volumeAttributes:
+      foo: bar
+    controllerPublishSecretRef:
+      name: mysecret1
+    nodeStageSecretRef:
+      name: mysecet2
+    nodePublishSecretRef:
+      name: mysecret3
+      
 ---
 kind: Pod
 apiVersion: v1
 metadata:
-  name: pod-fs
+  name: my-pod
 spec:
-  affinity:
-    podAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-      - labelSelector:
-          matchExpressions:
-          - key: app
-            operator: In
-            values:
-            - csi-hostpathplugin
-        topologyKey: kubernetes.io/hostname
   containers:
     - name: my-frontend
-      image: busybox
+      image: nginx
       volumeMounts:
-      - mountPath: "/data"
+      - mountPath: "/var/www/html"
         name: my-csi-volume
-      command: [ "sleep", "1000000" ]
   volumes:
     - name: my-csi-volume
       persistentVolumeClaim:
-        claimName: pvc-fs
+        claimName: my-request-for-storage
