@@ -7,8 +7,7 @@ provisioner: csi-driver.example.com
 parameters:
   type: pd-ssd
   csi.storage.k8s.io/provisioner-secret-name: mysecret
-  csi.storage.k8s.io/provisioner-secret-namespace: mynamespace
-
+---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -20,7 +19,7 @@ spec:
     requests:
       storage: 5Gi
   storageClassName: fast-storage
-
+---
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -46,8 +45,8 @@ spec:
       namespace: mynamespace
     nodePublishSecretRef:
       name: mysecret3
-      namespace: mynamespace
-
+      namespace: mynamespace      
+---
 kind: Pod
 apiVersion: v1
 metadata:
