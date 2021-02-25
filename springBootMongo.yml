@@ -7,27 +7,7 @@ data:
   # Configuration values can be set as key-value properties
   username: springapp
   password: mongodb@123
----
-kind: StorageClass
-apiVersion: storage.k8s.io/v1
-metadata:
-  name: fast
-provisioner: csi-driver.example.com
-parameters:
-  type: pd-ssd
-  csi.storage.k8s.io/provisioner-secret-name: mysecret
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: my-request-for-storage
-spec:
-  accessModes:
-  - ReadWriteOnce
-  resources:
-    requests:
-      storage: 5Gi
-  storageClassName: fast
+  
 ---
 # Replication Controller for springapp
 apiVersion: v1
