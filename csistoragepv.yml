@@ -1,36 +1,45 @@
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
 metadata:
-  name: fast-storage
-provisioner: csi-driver.example.com
-parameters:
-  type: pd-ssd
-  csi.storage.k8s.io/provisioner-secret-name: mysecret
+  name: csi-hostpath-sc
+provisioner: hostpath.csi.k8s.io
+volumeBindingMode: WaitForFirstConsumer
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: my-request-for-storage
+  name: pvc-fs
 spec:
   accessModes:
   - ReadWriteOnce
   resources:
     requests:
-      storage: 5Gi
-  storageClassName: fast-storage
+      storage: 1Gi
+  storageClassName: csi-hostpath-sc
 ---
 kind: Pod
 apiVersion: v1
 metadata:
-  name: my-pod
+  name: pod-fs
 spec:
+  affinity:
+    podAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+          - key: app
+            operator: In
+            values:
+            - csi-hostpathplugin
+        topologyKey: kubernetes.io/hostname
   containers:
     - name: my-frontend
-      image: nginx
+      image: busybox
       volumeMounts:
-      - mountPath: "/var/www/html"
+      - mountPath: "/data"
         name: my-csi-volume
+      command: [ "sleep", "1000000" ]
   volumes:
     - name: my-csi-volume
       persistentVolumeClaim:
-        claimName: my-request-for-storage
+        claimName: pvc-fs
