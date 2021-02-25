@@ -33,7 +33,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   csi:
     driver: csi-driver.example.com
-    volumeHandle: existingVolumeName
+    volumeHandle: vol-0d1cc224a80ed76ff
     readOnly: false
     fsType: ext4
     volumeAttributes:
