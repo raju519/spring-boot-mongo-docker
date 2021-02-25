@@ -1,3 +1,42 @@
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: cinder-csi-role
+rules:
+  - apiGroups: [""]
+    resources: ["persistentvolumes"]
+    verbs: ["create", "delete", "get", "list", "watch", "update", "patch"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["create", "get", "list", "watch", "update", "patch"]
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims"]
+    verbs: ["get", "list", "watch", "update", "patch"]
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["get", "list", "watch", "update", "patch"]
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["storageclasses"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["volumeattachments"]
+    verbs: ["get", "list", "watch", "update", "patch"]
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "list", "watch", "create", "update", "patch"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: cinder-csi-role
+subjects:
+  - kind: ServiceAccount
+    name: cinder-csi
+roleRef:
+  kind: ClusterRole
+  name: cinder-csi-role
+  apiGroup: rbac.authorization.k8s.io
+---
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
 metadata:
@@ -6,7 +45,6 @@ provisioner: csi-driver.example.com
 parameters:
   type: pd-ssd
   csi.storage.k8s.io/provisioner-secret-name: mysecret
-  csi.storage.k8s.io/provisioner-secret-namespace: mynamespace
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -19,33 +57,6 @@ spec:
     requests:
       storage: 5Gi
   storageClassName: fast-storage
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: my-manually-created-pv
-spec:
-  capacity:
-    storage: 5Gi
-  accessModes:
-    - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Retain
-  csi:
-    driver: csi-driver.example.com
-    volumeHandle: existingVolumeName
-    readOnly: false
-    fsType: ext4
-    volumeAttributes:
-      foo: bar
-    controllerPublishSecretRef:
-      name: mysecret1
-      namespace: mynamespace
-    nodeStageSecretRef:
-      name: mysecret2
-      namespace: mynamespace
-    nodePublishSecretRef
-      name: mysecret3
-      namespace: mynamespace
 ---
 kind: Pod
 apiVersion: v1
