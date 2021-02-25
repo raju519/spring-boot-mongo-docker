@@ -16,7 +16,6 @@ provisioner: csi-driver.example.com
 parameters:
   type: pd-ssd
   csi.storage.k8s.io/provisioner-secret-name: mysecret
-  csi.storage.k8s.io/provisioner-secret-namespace: mynamespace
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
