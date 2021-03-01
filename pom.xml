@@ -94,7 +94,7 @@
          <distributionManagement>
 	     <repository>
 	         <id>deployment</id>
-                 <name>intern releases</name>
+                 <name>releases</name>
                  <url>http://3.135.219.93:31495/repository/release/</url>
              </repository>
          </distributionManagement>
