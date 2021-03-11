@@ -2,11 +2,8 @@ kind: StorageClass
 apiVersion: storage.k8s.io/v1
 metadata:
   name: fast-storage
-provisioner: csi-driver.example.com
-parameters:
-  type: pd-ssd
-  csi.storage.k8s.io/provisioner-secret-name: mysecret
-  csi.storage.k8s.io/provisioner-secret-namespace: mynamespace
+provisioner: ebs.csi.aws.com
+volumeBindingMode: WaitForFirstConsumer
 
 ---
 apiVersion: v1
@@ -20,34 +17,7 @@ spec:
     requests:
       storage: 10Gi
   storageClassName: fast-storage
-
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: my-manually-created-pv
-spec:
-  capacity:
-    storage: 10Gi
-  accessModes:
-    - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Retain
-  csi:
-    driver: csi-driver.example.com
-    volumeHandle: pv
-    readOnly: false
-    fsType: ext4
-    volumeAttributes:
-      foo: bar
-    controllerPublishSecretRef:
-      name: mysecret1
-      namespace: mynamespace
-    nodeStageSecretRef:
-      name: mysecret2
-      namespace: mynamespace
-    nodePublishSecretRef:
-      name: mysecret3
-      namespace: mynamespace
+  
 ---
 kind: Pod
 apiVersion: v1
