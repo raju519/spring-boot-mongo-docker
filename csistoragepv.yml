@@ -18,7 +18,7 @@ spec:
   - ReadWriteOnce
   resources:
     requests:
-      storage: 2Gi
+      storage: 10Gi
   storageClassName: fast-storage
 
 ---
@@ -28,13 +28,13 @@ metadata:
   name: my-manually-created-pv
 spec:
   capacity:
-    storage: 2Gi
+    storage: 10Gi
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   csi:
     driver: csi-driver.example.com
-    volumeHandle: vol-0d1cc224a80ed76ff
+    volumeHandle: pv
     readOnly: false
     fsType: ext4
     volumeAttributes:
