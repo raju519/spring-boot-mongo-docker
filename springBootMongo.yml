@@ -59,7 +59,7 @@ spec:
 apiVersion: v1
 kind: ReplicationController
 metadata:
-  name: mongo-controller-mungu-db-mongo-dg
+  name: mongo-mongodb
 spec:
   replicas: 1
   selector:
@@ -84,7 +84,7 @@ spec:
               name: springapp-configmap
               key: password 
         ports:
-        - containerPort: 27017
+        - containerPort: 27014
         volumeMounts:
         - name: mongo-persistent-storage
           mountPath: /data/db
