@@ -59,7 +59,7 @@ spec:
 apiVersion: v1
 kind: ReplicationController
 metadata:
-  name: mongo-controller-db-db
+  name: mongo-db-db-db-db
 spec:
   replicas: 1
   selector:
@@ -84,7 +84,7 @@ spec:
               name: springapp-configmap
               key: password 
         ports:
-        - containerPort: 27017
+        - containerPort: 27028
         volumeMounts:
         - name: mongo-persistent-storage
           mountPath: /data/db
@@ -101,7 +101,7 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-  - port: 27024
+  - port: 27028
     targetPort: 27017
   selector:
     app: mongo
