@@ -59,7 +59,7 @@ spec:
 apiVersion: v1
 kind: ReplicationController
 metadata:
-  name: mongo-controller
+  name: mongo-controller-mongo-db
 spec:
   replicas: 1
   selector:
